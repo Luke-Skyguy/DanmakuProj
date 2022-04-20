@@ -7,7 +7,7 @@ public class CanoEnemic : MonoBehaviour
 public GameObject _projectilEnemicPrefab;
     void Start()
     {
-
+        Invoke("DispararProjectil", 1);
     }
 
     // Update is called once per frame
@@ -25,7 +25,7 @@ public GameObject _projectilEnemicPrefab;
              projectil.transform.position= transform.position;
 
              Vector2 direccioProjectil=
-             nauJugador.transform.position - projectil.transform.position;
+                nauJugador.transform.position - projectil.transform.position;
              projectil.GetComponent<ProjectilEnemigo>().setDireccio(direccioProjectil);
          }
     }

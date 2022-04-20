@@ -9,9 +9,9 @@ public class ProjectilEnemigo : MonoBehaviour
     private bool _projectilAPunt;
     private Vector2 _direcionProjectil;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        _velProjectilEnemigo = 5f;
+        _velProjectilEnemigo = 10f;
         _projectilAPunt = false;
     }
 
@@ -24,11 +24,18 @@ public class ProjectilEnemigo : MonoBehaviour
             novaPos += _direcionProjectil * _velProjectilEnemigo * Time.deltaTime;
             transform.position = novaPos;
         }
+        Vector2 limitInferior = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
+
+        if (transform.position.y < limitInferior.y)
+        {
+            Destroy(gameObject);
+        }
+
     }
 
     public void setDireccio(Vector2 direccio)
     {
-        _direcionProjectil = direccio;
+        _direcionProjectil = direccio.normalized;
         _projectilAPunt = true;
     }
 
@@ -36,8 +43,7 @@ public class ProjectilEnemigo : MonoBehaviour
     {
         if (other.tag == "NauJugador")
         {
-
-        Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 }

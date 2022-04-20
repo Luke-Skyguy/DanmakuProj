@@ -1,25 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Nave : MonoBehaviour
 {
     public float _velNau = 0.1f;
+    private bool _reducido = false;
     public GameObject _posicioCano1;
     public GameObject _posicioCano2;
     public GameObject _projectilPrefab;
-    private int _vidasNau=5;
+    public GameObject _explosioPrefab;
+    public GameObject _gameManager;
+    private int _vidasNau = 3;
+    
+    private int _puntos;
+    public AudioSource _sonidoLaser;
+    public Text textVida;
+ public Text textPuntos;
     // Start is called before the first frame update
     void Start()
     {
-
     }
 
     // Update is called once per frame
     void Update()
     {
         MoureNau();
-
+        ReduccionVelocidad();
         Disparar();
     }
 
@@ -47,31 +54,77 @@ public class Nave : MonoBehaviour
 
         transform.position = novaPosNau;
 
-        Debug.Log(direccioIndicadaX);
+    }
+    private void ReduccionVelocidad()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            if (!_reducido)
+            {
+                _velNau = _velNau / 2;
+                _reducido = !_reducido;
+            }
+            else
+            {
+                _velNau = _velNau * 2;
+                _reducido = !_reducido;
+            }
+        }
+
     }
     public void Disparar()
     {
         if (Input.GetKeyDown("space"))
         {
+            Debug.Log("entra espai");
             GameObject projectil1 = Instantiate(_projectilPrefab);
             projectil1.transform.position = _posicioCano1.transform.position;
 
             GameObject projectil2 = Instantiate(_projectilPrefab);
             projectil2.transform.position = _posicioCano2.transform.position;
+
+            _sonidoLaser.Play();
         }
+    }
+    public void reiniciarVidas()
+    {
+        _vidasNau = 3;
+        textVida.text = _vidasNau.ToString();
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        gameObject.SetActive(false);
+        if (other.tag == "Puntos")
+        {
+            _puntos+=300;
+            textPuntos.text = "Puntos: "+_puntos.ToString();
 
+        }
+       
+        if (_vidasNau < 3)
+        {
+            if (other.tag == "Vidas")
+            {
+                _vidasNau++;
+                textVida.text = _vidasNau.ToString();
+            }
+        }
         if (other.tag == "ProjectilEnemic")
         {
             _vidasNau--;
+            textVida.text = _vidasNau.ToString();
 
-            if(_vidasNau<=0){
-                gameObject.SetActive(false) ;
+            if (_vidasNau == 0)
+            {
+                gameObject.SetActive(false);
+                GameObject explosio = Instantiate(_explosioPrefab);
+                explosio.transform.position = transform.position;
+
+                //_gameManager.SetEstadoGameOver();
             }
         }
     }
+
+
 }
